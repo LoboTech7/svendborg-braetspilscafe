@@ -1,0 +1,13 @@
+import { expect, afterEach, beforeAll } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
+
+// Mock window.scrollTo
+beforeAll(() => {
+  window.scrollTo = () => {};
+});
+
+// Cleanup after each test case
+afterEach(() => {
+  cleanup();
+});

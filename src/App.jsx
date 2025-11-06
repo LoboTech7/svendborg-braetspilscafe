@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X, Clock, Phone, Mail, MapPin, Calendar, Dices, Users, Coffee, Heart } from 'lucide-react';
+import GameLibrary from './components/GameLibrary';
+import Events from './components/Events';
+import Gallery from './components/Gallery';
 
 export default function BraetspilscafeWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [bookingForm, setBookingForm] = useState({
     name: '', email: '', phone: '', date: '', time: '', guests: '', boardGame: ''
   });
@@ -13,11 +17,28 @@ export default function BraetspilscafeWebsite() {
 
   const navigation = [
     { name: 'Hjem', id: 'home' },
+    { name: 'Spilbibliotek', id: 'games' },
+    { name: 'Events', id: 'events' },
+    { name: 'Galleri', id: 'gallery' },
     { name: 'Menu', id: 'menu' },
     { name: 'Om Os', id: 'about' },
     { name: 'Kontakt', id: 'contact' },
     { name: 'Book Bord', id: 'booking' }
   ];
+
+  // Handle scroll effect for navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Smooth scroll to top when changing pages
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   const menuItems = [
     { name: 'Kaffe & Te', price: '25-35 kr', description: 'Specialty kaffe, te og varm chokolade' },
@@ -47,26 +68,26 @@ export default function BraetspilscafeWebsite() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Dices className="h-8 w-8 text-purple-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-800">Svendborg Brætspilscafe</span>
+    <div className="min-h-screen bg-gradient-to-b from-bastard-50 to-white">
+      {/* Navigation - Apple-Level Glassmorphism */}
+      <nav className={`glass-premium sticky top-0 z-50 transition-all duration-300 gpu-accelerated ${scrolled ? 'shadow-depth-lg' : 'shadow-depth'}`}>
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center cursor-pointer group" onClick={() => setCurrentPage('home')}>
+              <Dices className="h-10 w-10 text-primary animate-levitate group-hover:text-accent-orange transition-all duration-300" />
+              <span className="ml-3 text-2xl font-bold text-bastard-900 group-hover:text-gradient-premium transition-all duration-300 tracking-tight">Svendborg Brætspilscafe</span>
             </div>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex space-x-8">
+
+            {/* Desktop Navigation - Premium Buttons */}
+            <div className="hidden lg:flex space-x-3">
               {navigation.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setCurrentPage(item.id)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 gpu-accelerated ${
                     currentPage === item.id
-                      ? 'text-purple-600 bg-purple-50'
-                      : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                      ? 'btn-apple-primary text-white shadow-depth-lg'
+                      : 'btn-apple-secondary text-bastard-700 hover:text-primary'
                   }`}
                 >
                   {item.name}
@@ -74,10 +95,10 @@ export default function BraetspilscafeWebsite() {
               ))}
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile menu button - Enhanced */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+              className="lg:hidden p-3 rounded-xl text-primary btn-apple-secondary transition-all duration-300"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -86,7 +107,7 @@ export default function BraetspilscafeWebsite() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t">
+          <div className="lg:hidden glass border-t border-bastard-200 animate-fadeIn">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
                 <button
@@ -95,10 +116,10 @@ export default function BraetspilscafeWebsite() {
                     setCurrentPage(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
+                  className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
                     currentPage === item.id
-                      ? 'text-purple-600 bg-purple-50'
-                      : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                      ? 'text-white bg-primary shadow-dark'
+                      : 'text-bastard-700 hover:text-primary hover:bg-bastard-100'
                   }`}
                 >
                   {item.name}
@@ -112,61 +133,118 @@ export default function BraetspilscafeWebsite() {
       {/* Home Page */}
       {currentPage === 'home' && (
         <div>
-          {/* Hero Section */}
-          <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          {/* Hero Section - Apple-Level Premium */}
+          <div className="relative bg-gradient-hero text-white overflow-hidden">
+            {/* Gradient Mesh Background */}
+            <div className="absolute inset-0 gradient-mesh-1 opacity-30"></div>
+
+            {/* Floating Elements with Enhanced Animation */}
+            <div className="absolute inset-0 opacity-15">
+              <div className="absolute top-20 left-10 text-9xl animate-levitate">🎲</div>
+              <div className="absolute top-60 right-20 text-7xl animate-float stagger-2">🎮</div>
+              <div className="absolute bottom-32 left-1/4 text-8xl animate-levitate stagger-3">♠️</div>
+              <div className="absolute bottom-20 right-1/3 text-6xl animate-float stagger-4">🃏</div>
+            </div>
+
+            {/* Hero Content with Apple Spacing */}
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-34 md:py-40 relative z-10">
               <div className="text-center">
-                <h1 className="text-5xl md:text-6xl font-bold mb-6">Velkommen til Svendborg Brætspilscafe</h1>
-                <p className="text-xl md:text-2xl mb-8">Hvor spil, mad og hygge mødes</p>
-                <button
-                  onClick={() => setCurrentPage('booking')}
-                  className="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold text-lg hover:bg-purple-50 transition-colors shadow-lg"
-                >
-                  Book Bord Nu
-                </button>
+                {/* Apple-Level Typography */}
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-8 animate-fade-up drop-shadow-2xl tracking-tight leading-none">
+                  Velkommen til<br />Svendborg Brætspilscafe
+                </h1>
+                <p className="text-2xl md:text-3xl mb-14 animate-fade-up opacity-95 drop-shadow-lg font-light tracking-wide stagger-1">
+                  Hvor spil, mad og hygge mødes
+                </p>
+
+                {/* Premium CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-up stagger-2">
+                  <button
+                    onClick={() => setCurrentPage('booking')}
+                    className="btn-apple-accent text-white px-12 py-5 rounded-2xl font-bold text-lg shadow-glow-lg gpu-accelerated group"
+                  >
+                    <span className="flex items-center gap-3">
+                      Book Bord Nu
+                      <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage('games')}
+                    className="btn-apple-secondary border-2 border-white/30 text-white px-12 py-5 rounded-2xl font-bold text-lg backdrop-blur-lg gpu-accelerated"
+                  >
+                    Se Vores Spil
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Features */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-8 rounded-xl shadow-md text-center hover:shadow-xl transition-shadow">
-                <Dices className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">500+ Brætspil</h3>
-                <p className="text-gray-600">Stort udvalg af klassikere og nye spil</p>
+          {/* Features - Premium Cards with Apple Depth */}
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-26">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              <div className="card-premium p-10 text-center border-t-4 border-accent-red reveal-bottom stagger-1 gpu-accelerated">
+                <div className="mb-6 flex justify-center">
+                  <div className="relative">
+                    <Dices className="h-16 w-16 text-accent-red animate-levitate" />
+                    <div className="absolute inset-0 bg-accent-red/20 rounded-full blur-xl"></div>
+                  </div>
+                </div>
+                <h3 className="text-3xl font-black mb-4 text-bastard-900 tracking-tight">500+ Brætspil</h3>
+                <p className="text-bastard-600 leading-relaxed text-lg">Stort udvalg af klassikere og nye spil</p>
               </div>
-              <div className="bg-white p-8 rounded-xl shadow-md text-center hover:shadow-xl transition-shadow">
-                <Coffee className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Lækker Mad & Drikke</h3>
-                <p className="text-gray-600">Hjemmelavet med lokale ingredienser</p>
+              <div className="card-premium p-10 text-center border-t-4 border-accent-orange reveal-bottom stagger-2 gpu-accelerated">
+                <div className="mb-6 flex justify-center">
+                  <div className="relative">
+                    <Coffee className="h-16 w-16 text-accent-orange animate-levitate stagger-1" />
+                    <div className="absolute inset-0 bg-accent-orange/20 rounded-full blur-xl"></div>
+                  </div>
+                </div>
+                <h3 className="text-3xl font-black mb-4 text-bastard-900 tracking-tight">Lækker Mad & Drikke</h3>
+                <p className="text-bastard-600 leading-relaxed text-lg">Hjemmelavet med lokale ingredienser</p>
               </div>
-              <div className="bg-white p-8 rounded-xl shadow-md text-center hover:shadow-xl transition-shadow">
-                <Heart className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Hyggelig Atmosfære</h3>
-                <p className="text-gray-600">Perfekt til venner, familie og nye bekendtskaber</p>
+              <div className="card-premium p-10 text-center border-t-4 border-accent-purple reveal-bottom stagger-3 gpu-accelerated">
+                <div className="mb-6 flex justify-center">
+                  <div className="relative">
+                    <Heart className="h-16 w-16 text-accent-purple animate-levitate stagger-2" />
+                    <div className="absolute inset-0 bg-accent-purple/20 rounded-full blur-xl"></div>
+                  </div>
+                </div>
+                <h3 className="text-3xl font-black mb-4 text-bastard-900 tracking-tight">Hyggelig Atmosfære</h3>
+                <p className="text-bastard-600 leading-relaxed text-lg">Perfekt til venner, familie og nye bekendtskaber</p>
               </div>
             </div>
 
             {/* Additional Info Section */}
-            <div className="mt-16 bg-white rounded-xl shadow-lg p-8">
-              <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Hvorfor Besøge Os?</h2>
+            <div className="mt-16 bg-white rounded-xl shadow-minimal-lg p-10 border-l-8 border-primary">
+              <h2 className="text-4xl font-bold text-center mb-10 gradient-text">Hvorfor Besøge Os?</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-xl font-semibold mb-3 text-purple-600">For Alle Aldre</h3>
-                  <p className="text-gray-700">Fra børnefamilier til erfarne spillere - vi har noget for alle.</p>
+                <div className="p-4 rounded-lg hover:bg-bastard-50 transition-colors duration-200">
+                  <h3 className="text-xl font-bold mb-3 text-primary flex items-center">
+                    <Users className="h-5 w-5 mr-2" />
+                    For Alle Aldre
+                  </h3>
+                  <p className="text-bastard-800 leading-relaxed">Fra børnefamilier til erfarne spillere - vi har noget for alle.</p>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-3 text-purple-600">Events & Turneringer</h3>
-                  <p className="text-gray-700">Deltag i ugentlige turneringer og særlige events.</p>
+                <div className="p-4 rounded-lg hover:bg-bastard-50 transition-colors duration-200">
+                  <h3 className="text-xl font-bold mb-3 text-accent-orange flex items-center">
+                    <Calendar className="h-5 w-5 mr-2" />
+                    Events & Turneringer
+                  </h3>
+                  <p className="text-bastard-800 leading-relaxed">Deltag i ugentlige turneringer og særlige events.</p>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-3 text-purple-600">Spil-Vejledning</h3>
-                  <p className="text-gray-700">Vores venlige personale hjælper med at lære nye spil.</p>
+                <div className="p-4 rounded-lg hover:bg-bastard-50 transition-colors duration-200">
+                  <h3 className="text-xl font-bold mb-3 text-accent-purple flex items-center">
+                    <Dices className="h-5 w-5 mr-2" />
+                    Spil-Vejledning
+                  </h3>
+                  <p className="text-bastard-800 leading-relaxed">Vores venlige personale hjælper med at lære nye spil.</p>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-3 text-purple-600">Gratis WiFi</h3>
-                  <p className="text-gray-700">Hold kontakten mens du spiller og hygger.</p>
+                <div className="p-4 rounded-lg hover:bg-bastard-50 transition-colors duration-200">
+                  <h3 className="text-xl font-bold mb-3 text-accent-cyan flex items-center">
+                    <Coffee className="h-5 w-5 mr-2" />
+                    Gratis WiFi
+                  </h3>
+                  <p className="text-bastard-800 leading-relaxed">Hold kontakten mens du spiller og hygger.</p>
                 </div>
               </div>
             </div>
@@ -177,24 +255,24 @@ export default function BraetspilscafeWebsite() {
       {/* Menu Page */}
       {currentPage === 'menu' && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">Vores Menu</h2>
-          <p className="text-center text-gray-600 mb-12">Alt lavet med kærlighed og kvalitet</p>
+          <h2 className="text-5xl font-bold text-center mb-4 gradient-text">Vores Menu</h2>
+          <p className="text-center text-bastard-700 text-xl mb-12">Alt lavet med kærlighed og kvalitet</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menuItems.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-shadow border-t-4 border-purple-500">
+              <div key={index} className="card-hover bg-white rounded-xl shadow-minimal p-6 border-t-4 border-primary">
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-xl font-semibold text-gray-800">{item.name}</h3>
-                  <span className="text-purple-600 font-bold text-lg">{item.price}</span>
+                  <h3 className="text-xl font-bold text-bastard-900">{item.name}</h3>
+                  <span className="text-accent-orange font-bold text-lg bg-bastard-100 px-3 py-1 rounded-lg">{item.price}</span>
                 </div>
-                <p className="text-gray-600">{item.description}</p>
+                <p className="text-bastard-700 leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
-          <div className="mt-12 bg-purple-50 rounded-xl p-8 text-center">
-            <p className="text-lg text-gray-700">
-              <strong>Spil-leje:</strong> Gratis når du køber mad eller drikke! 
+          <div className="mt-12 bg-bastard-50 rounded-xl p-10 text-center shadow-minimal-lg border-2 border-bastard-200">
+            <p className="text-xl text-bastard-900 leading-relaxed">
+              <strong className="text-primary text-2xl">Spil-leje:</strong> Gratis når du køber mad eller drikke!
               <br />
-              <span className="text-sm text-gray-600 mt-2 block">Kun 50 kr/time hvis du ikke køber noget</span>
+              <span className="text-base text-bastard-600 mt-3 block">Kun 50 kr/time hvis du ikke køber noget</span>
             </p>
           </div>
         </div>
@@ -203,31 +281,31 @@ export default function BraetspilscafeWebsite() {
       {/* About Page */}
       {currentPage === 'about' && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h2 className="text-4xl font-bold text-center mb-8 text-gray-800">Om Svendborg Brætspilscafe</h2>
-          <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
-            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              Velkommen til Svendborg Brætspilscafe, hvor passion for brætspil møder hyggeligt samvær og lækker mad. 
-              Vi åbnede vores døre med en simpel vision: at skabe et sted hvor mennesker kan mødes, have det sjovt og 
+          <h2 className="text-5xl font-bold text-center mb-10 gradient-text">Om Svendborg Brætspilscafe</h2>
+          <div className="bg-white rounded-xl shadow-minimal-xl p-10 md:p-14 border-t-8 border-primary">
+            <p className="text-lg text-bastard-800 mb-6 leading-relaxed">
+              Velkommen til Svendborg Brætspilscafe, hvor passion for brætspil møder hyggeligt samvær og lækker mad.
+              Vi åbnede vores døre med en simpel vision: at skabe et sted hvor mennesker kan mødes, have det sjovt og
               dele glæden ved brætspil.
             </p>
-            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              Med over 500 forskellige brætspil i vores samling har vi noget for enhver smag - fra klassiske familiespil 
-              til komplekse strategispil. Vores dedikerede personale er altid klar til at hjælpe dig med at finde det 
+            <p className="text-lg text-bastard-800 mb-6 leading-relaxed">
+              Med over 500 forskellige brætspil i vores samling har vi noget for enhver smag - fra klassiske familiespil
+              til komplekse strategispil. Vores dedikerede personale er altid klar til at hjælpe dig med at finde det
               perfekte spil eller lære dig et nyt.
             </p>
-            <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-              Vi tror på kvalitet i alt, vi gør. Derfor laver vi alt vores mad fra bunden med friske, lokale ingredienser. 
-              Vores kaffe er specialty-kaffe fra lokale risteri, og vi har et omhyggeligt udvalg af drikkevarer til alle 
+            <p className="text-lg text-bastard-800 mb-8 leading-relaxed">
+              Vi tror på kvalitet i alt, vi gør. Derfor laver vi alt vores mad fra bunden med friske, lokale ingredienser.
+              Vores kaffe er specialty-kaffe fra lokale risteri, og vi har et omhyggeligt udvalg af drikkevarer til alle
               smagspræferencer.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              <div className="bg-purple-50 p-6 rounded-lg">
-                <h3 className="font-semibold text-xl mb-2 text-gray-800">Vores Mission</h3>
-                <p className="text-gray-700">At bringe mennesker sammen gennem glæden ved brætspil og skabe uforglemmelige øjeblikke.</p>
+              <div className="bg-bastard-50 p-7 rounded-xl shadow-minimal border-l-4 border-accent-red">
+                <h3 className="font-bold text-2xl mb-3 text-bastard-900">Vores Mission</h3>
+                <p className="text-bastard-700 leading-relaxed">At bringe mennesker sammen gennem glæden ved brætspil og skabe uforglemmelige øjeblikke.</p>
               </div>
-              <div className="bg-purple-50 p-6 rounded-lg">
-                <h3 className="font-semibold text-xl mb-2 text-gray-800">Vores Værdier</h3>
-                <p className="text-gray-700">Fællesskab, kvalitet, inklusion og sjov for alle aldersgrupper.</p>
+              <div className="bg-bastard-50 p-7 rounded-xl shadow-minimal border-l-4 border-accent-purple">
+                <h3 className="font-bold text-2xl mb-3 text-bastard-900">Vores Værdier</h3>
+                <p className="text-bastard-700 leading-relaxed">Fællesskab, kvalitet, inklusion og sjov for alle aldersgrupper.</p>
               </div>
             </div>
           </div>
@@ -244,37 +322,40 @@ export default function BraetspilscafeWebsite() {
               <h3 className="text-2xl font-semibold mb-6 text-gray-800">Send os en besked</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Navn</label>
+                  <label className="block text-sm font-bold text-bastard-900 mb-2">Navn</label>
                   <input
                     type="text"
                     value={contactForm.name}
                     onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="input-premium w-full"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-bold text-bastard-900 mb-2">Email</label>
                   <input
                     type="email"
                     value={contactForm.email}
                     onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="input-premium w-full"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Besked</label>
+                  <label className="block text-sm font-bold text-bastard-900 mb-2">Besked</label>
                   <textarea
                     rows="4"
                     value={contactForm.message}
                     onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="input-premium w-full resize-none"
                   ></textarea>
                 </div>
                 <button
                   onClick={handleContactSubmit}
-                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                  className="btn-apple-primary w-full text-white py-5 rounded-xl font-bold text-lg gpu-accelerated group"
                 >
-                  Send Besked
+                  <span className="flex items-center justify-center gap-2">
+                    Send Besked
+                    <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                  </span>
                 </button>
               </div>
             </div>
@@ -284,34 +365,34 @@ export default function BraetspilscafeWebsite() {
               <div className="bg-white rounded-xl shadow-lg p-8">
                 <h3 className="text-2xl font-semibold mb-6 text-gray-800">Find os her</h3>
                 <div className="space-y-4">
-                  <div className="flex items-start">
-                    <MapPin className="h-6 w-6 text-purple-600 mr-3 mt-1" />
+                  <div className="flex items-start p-3 rounded-lg hover:bg-bastard-50 transition-colors">
+                    <MapPin className="h-6 w-6 text-accent-red mr-3 mt-1 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-gray-800">Adresse</p>
-                      <p className="text-gray-600">Centrumgade 123, 5700 Svendborg</p>
+                      <p className="font-bold text-bastard-900">Adresse</p>
+                      <p className="text-bastard-700">Centrumgade 123, 5700 Svendborg</p>
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <Phone className="h-6 w-6 text-purple-600 mr-3 mt-1" />
+                  <div className="flex items-start p-3 rounded-lg hover:bg-bastard-50 transition-colors">
+                    <Phone className="h-6 w-6 text-accent-orange mr-3 mt-1 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-gray-800">Telefon</p>
-                      <p className="text-gray-600">+45 12 34 56 78</p>
+                      <p className="font-bold text-bastard-900">Telefon</p>
+                      <p className="text-bastard-700">+45 12 34 56 78</p>
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <Mail className="h-6 w-6 text-purple-600 mr-3 mt-1" />
+                  <div className="flex items-start p-3 rounded-lg hover:bg-bastard-50 transition-colors">
+                    <Mail className="h-6 w-6 text-accent-cyan mr-3 mt-1 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-gray-800">Email</p>
-                      <p className="text-gray-600">info@svendborgbraetspil.dk</p>
+                      <p className="font-bold text-bastard-900">Email</p>
+                      <p className="text-bastard-700">info@svendborgbraetspil.dk</p>
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <Clock className="h-6 w-6 text-purple-600 mr-3 mt-1" />
+                  <div className="flex items-start p-3 rounded-lg hover:bg-bastard-50 transition-colors">
+                    <Clock className="h-6 w-6 text-accent-purple mr-3 mt-1 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-gray-800">Åbningstider</p>
-                      <p className="text-gray-600">Man-Tor: 12:00 - 22:00</p>
-                      <p className="text-gray-600">Fre-Lør: 12:00 - 24:00</p>
-                      <p className="text-gray-600">Søndag: 12:00 - 20:00</p>
+                      <p className="font-bold text-bastard-900">Åbningstider</p>
+                      <p className="text-bastard-700">Man-Tor: 12:00 - 22:00</p>
+                      <p className="text-bastard-700">Fre-Lør: 12:00 - 24:00</p>
+                      <p className="text-bastard-700">Søndag: 12:00 - 20:00</p>
                     </div>
                   </div>
                 </div>
@@ -320,6 +401,15 @@ export default function BraetspilscafeWebsite() {
           </div>
         </div>
       )}
+
+      {/* Game Library Page */}
+      {currentPage === 'games' && <GameLibrary />}
+
+      {/* Events Page */}
+      {currentPage === 'events' && <Events />}
+
+      {/* Gallery Page */}
+      {currentPage === 'gallery' && <Gallery />}
 
       {/* Booking Page */}
       {currentPage === 'booking' && (
@@ -405,10 +495,13 @@ export default function BraetspilscafeWebsite() {
               </div>
               <button
                 onClick={handleBookingSubmit}
-                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center"
+                className="btn-apple-accent w-full text-white py-5 rounded-xl font-bold text-lg gpu-accelerated group shadow-glow"
               >
-                <Calendar className="h-5 w-5 mr-2" />
-                Bekræft Reservation
+                <span className="flex items-center justify-center gap-3">
+                  <Calendar className="h-6 w-6 transform group-hover:rotate-12 transition-transform duration-300" />
+                  Bekræft Reservation
+                  <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                </span>
               </button>
               <p className="text-sm text-gray-500 text-center mt-4">
                 Vi sender en bekræftelse til din email inden for 24 timer
@@ -419,11 +512,17 @@ export default function BraetspilscafeWebsite() {
       )}
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <footer className="bg-primary text-white mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <p className="text-gray-400">&copy; 2025 Svendborg Brætspilscafe. Alle rettigheder forbeholdes.</p>
-            <p className="text-gray-500 text-sm mt-2">Lavet med ❤️ til brætspilsentusiaster</p>
+            <div className="flex items-center justify-center mb-4">
+              <Dices className="h-8 w-8 text-accent-pink mr-2 animate-gentle-float" />
+              <span className="text-2xl font-bold">Svendborg Brætspilscafe</span>
+            </div>
+            <p className="text-bastard-200 text-lg mb-2">&copy; 2025 Svendborg Brætspilscafe. Alle rettigheder forbeholdes.</p>
+            <p className="text-bastard-300 text-sm flex items-center justify-center gap-1">
+              Lavet med <Heart className="h-4 w-4 text-accent-pink fill-accent-pink animate-pulse" /> til brætspilsentusiaster
+            </p>
           </div>
         </div>
       </footer>
